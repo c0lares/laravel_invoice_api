@@ -48,13 +48,13 @@ class InvoiceController extends Controller
      */
     public function show($id){
         
-        $invoice = Invoice::find($id);
+        $invoice = Invoice::with('user')->find($id);
 
         if (!$invoice) {
             return response()->json(['message' => 'Invoice not found'], 404);
         }
 
-        return $invoice;
+        return new InvoiceResource($invoice);
     }
 
     /**
@@ -67,7 +67,7 @@ class InvoiceController extends Controller
             $request->merge(['payment_date' => Carbon::now()->toDateTimeString()]);
         }
         $invoice->update($request->all());
-        return $invoice;
+        return new InvoiceResource($invoice);
     }
 
     /**
@@ -77,5 +77,6 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::findOrFail($id);
         $invoice->delete();
+        return Invoice::all();
     }
 }
